@@ -2,6 +2,24 @@
 
 AI-powered predictive maintenance for industrial equipment — detect anomalies before they become failures, powered by Snowflake Cortex AI.
 
+## AWS Hero — Industrial AI Maintenance Co-pilot
+
+Snowflake + **AWS IoT SiteWise** + **AWS Bedrock** (via Lambda) + **QuickSight**. SiteWise watches the sensors; Snowflake catches the anomaly; Bedrock writes the work order with parts, skills, ETA, and safety notes — one click for the technician.
+
+```mermaid
+flowchart LR
+    Sensors[Crane / pump sensors] --> SW[AWS IoT SiteWise asset model]
+    SW --> S3[S3 sitewise/]
+    S3 --> SF[Snowflake EQUIPMENT_HEALTH + ANOMALY_ALERTS]
+    SF --> CX[Cortex anomaly + Cortex Complete]
+    CX --> LAM[Lambda mfg-maint-workorder-bedrock]
+    LAM --> BR[Bedrock Claude]
+    BR --> WO[Work order markdown]
+    WO --> ST[Streamlit AI Work Order page]
+    SF --> QS[QuickSight + Amazon Q]
+```
+
+
 ## Architecture
 
 ```
