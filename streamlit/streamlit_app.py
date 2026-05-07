@@ -10,7 +10,7 @@ st.set_page_config(page_title="Predictive Maintenance", layout="wide", page_icon
 
 STATUS_COLORS = {"OPERATIONAL": "#2ECC71", "WARNING": "#F39C12", "CRITICAL": "#E74C3C", "OFFLINE": "#7F8C8D"}
 
-page = st.sidebar.radio("Navigation", ["Overview", "Equipment Health", "Anomaly Alerts", "Maintenance Schedule", "Ask Maintenance"], label_visibility="collapsed")
+page = st.sidebar.radio("Navigation", ["Overview", "Equipment Health", "Anomaly Alerts", "Maintenance Schedule", "AI Work Order (AWS Bedrock)", "Ask Maintenance", "AWS Architecture"], label_visibility="collapsed")
 st.sidebar.divider()
 st.sidebar.markdown("### Predictive Maintenance")
 st.sidebar.caption("100 equipment / 200K sensor readings / 5K work orders")
@@ -148,6 +148,32 @@ elif page == "Maintenance Schedule":
         st.subheader(f"Overdue Items ({len(overdue)})")
         st.dataframe(overdue.sort_values("DAYS_OVERDUE", ascending=False)[["WO_ID", "EQUIPMENT_NAME", "WO_TYPE", "PRIORITY", "DAYS_OVERDUE", "COST_USD", "DESCRIPTION"]].head(30), use_container_width=True, hide_index=True)
 
+elif page == "AI Work Order (AWS Bedrock)":
+    st.title("AI Work Order Generator")
+    st.caption("IoT SiteWise asset model + AWS Bedrock (via Lambda `mfg-maint-workorder-bedrock`)")
+    try:
+        eq = session.sql("SELECT EQUIPMENT_ID, NAME, STATUS, CRITICALITY, HEALTH_SCORE FROM MANUFACTURING_MAINTENANCE.CURATED.EQUIPMENT_HEALTH WHERE STATUS IN ('CRITICAL','WARNING') ORDER BY HEALTH_SCORE LIMIT 30").to_pandas()
+        c1, c2, c3 = st.columns(3)
+        c1.metric("SiteWise assets", "100")
+        c2.metric("AWS Hero", "Bedrock")
+        c3.metric("Lambda", "mfg-maint-workorder-bedrock")
+        if eq.empty:
+            st.success("No critical / warning equipment.")
+        else:
+            options = [f"{r.EQUIPMENT_ID} - {r.NAME} ({r.STATUS}, health {r.HEALTH_SCORE:.1f})" for r in eq.itertuples()]
+            sel = st.selectbox("Pick equipment", options)
+            asset = sel.split(" - ")[0]
+            if st.button("Generate work order"):
+                with st.spinner("Calling Bedrock (via Cortex Complete in this demo)..."):
+                    md = session.sql(f"CALL MANUFACTURING_MAINTENANCE.AI.SP_GENERATE_WORK_ORDER('{asset}')").to_pandas().iloc[0, 0]
+                    st.success("Work order generated.")
+                    st.markdown(md)
+            st.divider()
+            st.subheader("Critical / Warning equipment")
+            st.dataframe(eq, use_container_width=True)
+    except Exception as e:
+        st.error(f"Work order error: {e}")
+
 elif page == "Ask Maintenance":
     st.title("Ask the Data")
     st.caption("Natural language questions powered by Cortex Analyst")
@@ -176,3 +202,33 @@ elif page == "Ask Maintenance":
                     st.error(parsed)
             except Exception as e:
                 st.error(f"Error: {e}")
+
+elif page == "AWS Architecture":
+    st.title("AWS Architecture - Industrial AI Maintenance Co-pilot")
+    st.caption("Snowflake + AWS IoT SiteWise + AWS Bedrock + QuickSight")
+    a, b, c, d = st.columns(4)
+    a.metric("AWS Hero", "IoT SiteWise + Bedrock")
+    b.metric("SiteWise model", "mfg-maintenance/cranes")
+    c.metric("Foundation model", "Claude 4 Sonnet")
+    d.metric("Lambda", "mfg-maint-workorder-bedrock")
+    st.markdown(
+        """
+**Data flow**
+
+1. **Crane / pump / conveyor sensors** publish to **AWS IoT SiteWise** asset model `mfg-maintenance/cranes`.
+2. SiteWise hot-tier exports to S3 (`s3://sg-manufacturing-demos-2026/maintenance/sitewise/`).
+3. **Snowflake** ingests via external table -> Dynamic Tables -> `EQUIPMENT_HEALTH`, `ANOMALY_ALERTS`.
+4. **Cortex AI** runs anomaly detection. When an asset crosses threshold, the operator clicks "Generate work order".
+5. **AWS Lambda** `mfg-maint-workorder-bedrock` calls **Bedrock Claude** with the SiteWise asset context + Snowflake anomaly fields and returns a structured Markdown work order (parts, skills, ETA, safety).
+6. **QuickSight** dashboard `mfg-maintenance-dashboard` and the **Amazon Q topic** `mfg-maintenance-q` give the maintenance manager an executive view.
+
+**Demo note** — in this account the work-order LLM call is fulfilled by **Snowflake Cortex Complete** (Claude 4 Sonnet on Snowflake) so the demo runs without an AWS API integration. The customer flips this to a real Bedrock external function in production.
+
+**ARNs**
+
+- `arn:aws:iotsitewise:us-west-2:018437500440:asset-model/mfg-maintenance-cranes`
+- `arn:aws:s3:::sg-manufacturing-demos-2026/maintenance/sitewise/`
+- `arn:aws:lambda:us-west-2:018437500440:function:mfg-maint-workorder-bedrock`
+- `arn:aws:bedrock:us-west-2::foundation-model/anthropic.claude-sonnet-4-v1:0`
+        """
+    )
