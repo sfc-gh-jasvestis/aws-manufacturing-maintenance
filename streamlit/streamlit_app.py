@@ -6,6 +6,18 @@ import _snowflake
 from snowflake.snowpark.context import get_active_session
 
 session = get_active_session()
+
+def coerce_numeric(df, cols=None):
+    """Force Decimal/object cols to float64 so plotly renders them numerically (not as categorical)."""
+    if df is None or len(df) == 0:
+        return df
+    target = cols or [c for c in df.columns if df[c].dtype == "object"]
+    for c in target:
+        try:
+            df[c] = pd.Series([float(x) if x is not None else None for x in df[c]], index=df.index, dtype="float64")
+        except (TypeError, ValueError):
+            pass
+    return df
 st.set_page_config(page_title="Predictive Maintenance", layout="wide", page_icon="wrench")
 
 STATUS_COLORS = {"OPERATIONAL": "#2ECC71", "WARNING": "#F39C12", "CRITICAL": "#E74C3C", "OFFLINE": "#7F8C8D"}
@@ -18,7 +30,7 @@ st.sidebar.caption("100 equipment / 200K sensor readings / 5K work orders")
 
 @st.cache_data(ttl=60)
 def load_health():
-    df = session.sql("SELECT * FROM MANUFACTURING_MAINTENANCE.CURATED.EQUIPMENT_HEALTH").to_pandas()
+    df = coerce_numeric(session.sql("SELECT * FROM MANUFACTURING_MAINTENANCE.CURATED.EQUIPMENT_HEALTH").to_pandas())
     for c in ["HEALTH_SCORE", "CRITICAL_SENSORS", "WARNING_SENSORS"]:
         df[c] = pd.to_numeric(df[c], errors="coerce")
     return df
@@ -26,7 +38,7 @@ def load_health():
 
 @st.cache_data(ttl=60)
 def load_anomaly():
-    df = session.sql("SELECT * FROM MANUFACTURING_MAINTENANCE.CURATED.ANOMALY_ALERTS ORDER BY HOURS_TO_BREACH_ESTIMATE NULLS LAST").to_pandas()
+    df = coerce_numeric(session.sql("SELECT * FROM MANUFACTURING_MAINTENANCE.CURATED.ANOMALY_ALERTS ORDER BY HOURS_TO_BREACH_ESTIMATE NULLS LAST").to_pandas())
     for c in ["CURRENT_VALUE", "THRESHOLD_HIGH", "THRESHOLD_LOW", "HOURS_TO_BREACH_ESTIMATE", "PCT_TO_THRESHOLD"]:
         df[c] = pd.to_numeric(df[c], errors="coerce")
     return df
@@ -34,7 +46,7 @@ def load_anomaly():
 
 @st.cache_data(ttl=60)
 def load_schedule():
-    df = session.sql("SELECT * FROM MANUFACTURING_MAINTENANCE.CURATED.MAINTENANCE_SCHEDULE").to_pandas()
+    df = coerce_numeric(session.sql("SELECT * FROM MANUFACTURING_MAINTENANCE.CURATED.MAINTENANCE_SCHEDULE").to_pandas())
     for c in ["DAYS_OVERDUE", "COST_USD"]:
         df[c] = pd.to_numeric(df[c], errors="coerce")
     return df
@@ -152,7 +164,7 @@ elif page == "AI Work Order (AWS Bedrock)":
     st.title("AI Work Order Generator")
     st.caption("IoT SiteWise asset model + AWS Bedrock (via Lambda `mfg-maint-workorder-bedrock`)")
     try:
-        eq = session.sql("SELECT EQUIPMENT_ID, NAME, STATUS, CRITICALITY, HEALTH_SCORE FROM MANUFACTURING_MAINTENANCE.CURATED.EQUIPMENT_HEALTH WHERE STATUS IN ('CRITICAL','WARNING') ORDER BY HEALTH_SCORE LIMIT 30").to_pandas()
+        eq = coerce_numeric(session.sql("SELECT EQUIPMENT_ID, NAME, STATUS, CRITICALITY, HEALTH_SCORE FROM MANUFACTURING_MAINTENANCE.CURATED.EQUIPMENT_HEALTH WHERE STATUS IN ('CRITICAL','WARNING') ORDER BY HEALTH_SCORE LIMIT 30").to_pandas())
         c1, c2, c3 = st.columns(3)
         c1.metric("SiteWise assets", "100")
         c2.metric("AWS Hero", "Bedrock")
