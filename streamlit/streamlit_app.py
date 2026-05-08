@@ -112,7 +112,7 @@ elif page == "Equipment Health":
     st.plotly_chart(fig, use_container_width=True)
 
     st.subheader("All Equipment")
-    st.dataframe(h[["EQUIPMENT_ID", "NAME", "EQUIPMENT_TYPE", "LOCATION", "STATUS", "CRITICALITY", "HEALTH_SCORE", "CRITICAL_SENSORS", "WARNING_SENSORS"]].sort_values("HEALTH_SCORE"), use_container_width=True)
+    st.dataframe(h[["EQUIPMENT_ID", "NAME", "EQUIPMENT_TYPE", "LOCATION", "STATUS", "CRITICALITY", "HEALTH_SCORE", "CRITICAL_SENSORS", "WARNING_SENSORS"]].sort_values("HEALTH_SCORE").reset_index(drop=True), use_container_width=True)
 
 elif page == "Anomaly Alerts":
     st.title("Anomaly Alerts")
@@ -139,7 +139,7 @@ elif page == "Anomaly Alerts":
         st.plotly_chart(fig, use_container_width=True)
 
     st.subheader("Alert Detail")
-    st.dataframe(a[["EQUIPMENT_NAME", "EQUIPMENT_TYPE", "SENSOR_TYPE", "CURRENT_VALUE", "THRESHOLD_HIGH", "THRESHOLD_LOW", "TREND_DIRECTION", "HOURS_TO_BREACH_ESTIMATE", "PCT_TO_THRESHOLD"]], use_container_width=True)
+    st.dataframe(a[["EQUIPMENT_NAME", "EQUIPMENT_TYPE", "SENSOR_TYPE", "CURRENT_VALUE", "THRESHOLD_HIGH", "THRESHOLD_LOW", "TREND_DIRECTION", "HOURS_TO_BREACH_ESTIMATE", "PCT_TO_THRESHOLD"]].reset_index(drop=True), use_container_width=True)
 
 elif page == "Maintenance Schedule":
     st.title("Maintenance Schedule")
@@ -179,7 +179,7 @@ elif page == "Maintenance Schedule":
 
     if not overdue.empty:
         st.subheader(f"Overdue Items ({len(overdue)})")
-        st.dataframe(overdue.sort_values("DAYS_OVERDUE", ascending=False)[["WO_ID", "EQUIPMENT_NAME", "WO_TYPE", "PRIORITY", "DAYS_OVERDUE", "COST_USD", "DESCRIPTION"]].head(30), use_container_width=True)
+        st.dataframe(overdue.sort_values("DAYS_OVERDUE", ascending=False)[["WO_ID", "EQUIPMENT_NAME", "WO_TYPE", "PRIORITY", "DAYS_OVERDUE", "COST_USD", "DESCRIPTION"]].head(30).reset_index(drop=True), use_container_width=True)
 
 elif page == "AI Work Order (AWS Bedrock)":
     st.title("AI Work Order Generator")
@@ -203,7 +203,7 @@ elif page == "AI Work Order (AWS Bedrock)":
                     st.markdown(md)
             st.divider()
             st.subheader("Critical / Warning equipment")
-            st.dataframe(eq, use_container_width=True)
+            st.dataframe(eq.reset_index(drop=True), use_container_width=True)
     except Exception as e:
         st.error(f"Work order error: {e}")
 
@@ -228,7 +228,7 @@ elif page == "Ask Maintenance":
                             with st.expander("SQL"):
                                 st.code(sql, language="sql")
                             try:
-                                st.dataframe(session.sql(sql).to_pandas(), use_container_width=True)
+                                st.dataframe(session.sql(sql).to_pandas().reset_index(drop=True), use_container_width=True)
                             except Exception:
                                 pass
                 else:
