@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import json
 import plotly.express as px
+import plotly.graph_objects as go
 import _snowflake
 from snowflake.snowpark.context import get_active_session
 
@@ -77,15 +78,20 @@ if page == "Overview":
     with cc1:
         sc = h["STATUS"].value_counts().reset_index()
         sc.columns = ["STATUS", "COUNT"]
-        fig = px.pie(sc, names="STATUS", values="COUNT", color="STATUS", color_discrete_map=STATUS_COLORS, title="Equipment Status Distribution", hole=0.4)
-        fig.update_layout(height=380, margin=dict(t=40, b=10))
+        labels = [str(v) for v in sc["STATUS"].tolist()]
+        values = [int(v) for v in sc["COUNT"].tolist()]
+        colors = [STATUS_COLORS.get(l, "#888") for l in labels]
+        fig = go.Figure(data=[go.Pie(labels=labels, values=values, hole=0.4, marker=dict(colors=colors), sort=False, textinfo="label+percent")])
+        fig.update_layout(title="Equipment Status Distribution", height=380, margin=dict(t=40, b=10))
         st.plotly_chart(fig, use_container_width=True)
     with cc2:
         th = h.groupby("EQUIPMENT_TYPE")["HEALTH_SCORE"].mean().reset_index().sort_values("HEALTH_SCORE")
-        fig = px.bar(th, x="HEALTH_SCORE", y="EQUIPMENT_TYPE", orientation="h", color="HEALTH_SCORE", color_continuous_scale="RdYlGn", range_color=[0, 100], title="Avg Health Score by Type")
+        x_vals = [float(v) for v in th["HEALTH_SCORE"].tolist()]
+        y_vals = [str(v) for v in th["EQUIPMENT_TYPE"].tolist()]
+        fig = go.Figure(data=[go.Bar(x=x_vals, y=y_vals, orientation="h", marker=dict(color=x_vals, colorscale="RdYlGn", cmin=0, cmax=100), hovertemplate="<b>%{y}</b><br>Health: %{x:.1f}<extra></extra>")])
         fig.add_vline(x=60, line_dash="dash", line_color="orange", annotation_text="Warn 60")
         fig.add_vline(x=30, line_dash="dash", line_color="red", annotation_text="Crit 30")
-        fig.update_layout(height=380, margin=dict(t=40, b=10), coloraxis_showscale=False)
+        fig.update_layout(title="Avg Health Score by Type", height=380, margin=dict(t=40, b=10), xaxis_title="Health Score", yaxis_title="")
         st.plotly_chart(fig, use_container_width=True)
 
 elif page == "Equipment Health":
@@ -93,11 +99,16 @@ elif page == "Equipment Health":
     st.caption("Health score by individual equipment (0=critical, 100=optimal)")
     h = load_health()
 
-    worst = h.nsmallest(20, "HEALTH_SCORE")
-    fig = px.bar(worst.sort_values("HEALTH_SCORE"), x="HEALTH_SCORE", y="NAME", orientation="h", color="STATUS", color_discrete_map=STATUS_COLORS, title="Bottom 20 Equipment by Health Score", hover_data=["EQUIPMENT_TYPE", "LOCATION"])
+    worst = h.nsmallest(20, "HEALTH_SCORE").sort_values("HEALTH_SCORE")
+    x_vals = [float(v) for v in worst["HEALTH_SCORE"].tolist()]
+    y_vals = [str(v) for v in worst["NAME"].tolist()]
+    statuses = [str(v) for v in worst["STATUS"].tolist()]
+    bar_colors = [STATUS_COLORS.get(s, "#888") for s in statuses]
+    cd = [[str(t), str(l)] for t, l in zip(worst["EQUIPMENT_TYPE"].tolist(), worst["LOCATION"].tolist())]
+    fig = go.Figure(data=[go.Bar(x=x_vals, y=y_vals, orientation="h", marker_color=bar_colors, customdata=cd, hovertemplate="<b>%{y}</b><br>Health: %{x:.1f}<br>Type: %{customdata[0]}<br>Location: %{customdata[1]}<extra></extra>")])
     fig.add_vline(x=30, line_dash="dash", line_color="red", annotation_text="Critical 30")
     fig.add_vline(x=60, line_dash="dash", line_color="orange", annotation_text="Warning 60")
-    fig.update_layout(height=600, margin=dict(t=40, b=10, l=200))
+    fig.update_layout(title="Bottom 20 Equipment by Health Score", height=600, margin=dict(t=40, b=10, l=200), xaxis_title="Health Score", yaxis_title="")
     st.plotly_chart(fig, use_container_width=True)
 
     st.subheader("All Equipment")
@@ -119,8 +130,12 @@ elif page == "Anomaly Alerts":
     c3.metric("Breach in <12h", int((near["HOURS_TO_BREACH_ESTIMATE"] < 12).sum()))
 
     if not near.empty:
-        fig = px.bar(near.sort_values("HOURS_TO_BREACH_ESTIMATE", ascending=False), x="HOURS_TO_BREACH_ESTIMATE", y="EQUIPMENT_NAME", orientation="h", color="HOURS_TO_BREACH_ESTIMATE", color_continuous_scale="OrRd_r", title="Hours to Threshold Breach (lower = more urgent)", hover_data=["SENSOR_TYPE", "CURRENT_VALUE", "THRESHOLD_HIGH"])
-        fig.update_layout(height=450, margin=dict(t=40, b=10, l=200), coloraxis_showscale=False)
+        ns = near.sort_values("HOURS_TO_BREACH_ESTIMATE", ascending=False)
+        x_vals = [float(v) for v in ns["HOURS_TO_BREACH_ESTIMATE"].tolist()]
+        y_vals = [str(v) for v in ns["EQUIPMENT_NAME"].tolist()]
+        cd = [[str(s), float(c) if c is not None else 0.0, float(t) if t is not None else 0.0] for s, c, t in zip(ns["SENSOR_TYPE"].tolist(), ns["CURRENT_VALUE"].tolist(), ns["THRESHOLD_HIGH"].tolist())]
+        fig = go.Figure(data=[go.Bar(x=x_vals, y=y_vals, orientation="h", marker=dict(color=x_vals, colorscale="OrRd_r"), customdata=cd, hovertemplate="<b>%{y}</b><br>Hours to breach: %{x:.1f}<br>Sensor: %{customdata[0]}<br>Current: %{customdata[1]:.2f}<br>Threshold: %{customdata[2]:.2f}<extra></extra>")])
+        fig.update_layout(title="Hours to Threshold Breach (lower = more urgent)", height=450, margin=dict(t=40, b=10, l=200), xaxis_title="Hours", yaxis_title="")
         st.plotly_chart(fig, use_container_width=True)
 
     st.subheader("Alert Detail")
@@ -146,14 +161,20 @@ elif page == "Maintenance Schedule":
     with cc1:
         ws = s["WO_STATUS"].value_counts().reset_index()
         ws.columns = ["WO_STATUS", "COUNT"]
-        fig = px.pie(ws, names="WO_STATUS", values="COUNT", title="Work Orders by Status", hole=0.4)
-        fig.update_layout(height=380, margin=dict(t=40, b=10))
+        labels = [str(v) for v in ws["WO_STATUS"].tolist()]
+        values = [int(v) for v in ws["COUNT"].tolist()]
+        fig = go.Figure(data=[go.Pie(labels=labels, values=values, hole=0.4, sort=False, textinfo="label+percent")])
+        fig.update_layout(title="Work Orders by Status", height=380, margin=dict(t=40, b=10))
         st.plotly_chart(fig, use_container_width=True)
     with cc2:
         pr = s["PRIORITY"].value_counts().reset_index()
         pr.columns = ["PRIORITY", "COUNT"]
-        fig = px.bar(pr, x="PRIORITY", y="COUNT", color="PRIORITY", title="Work Orders by Priority", color_discrete_map={"CRITICAL": "#E74C3C", "HIGH": "#F39C12", "MEDIUM": "#3498DB", "LOW": "#2ECC71"})
-        fig.update_layout(height=380, margin=dict(t=40, b=10))
+        x_vals = [str(v) for v in pr["PRIORITY"].tolist()]
+        y_vals = [int(v) for v in pr["COUNT"].tolist()]
+        prio_colors = {"CRITICAL": "#E74C3C", "HIGH": "#F39C12", "MEDIUM": "#3498DB", "LOW": "#2ECC71"}
+        bar_colors = [prio_colors.get(p, "#888") for p in x_vals]
+        fig = go.Figure(data=[go.Bar(x=x_vals, y=y_vals, marker_color=bar_colors, text=y_vals, textposition="auto", hovertemplate="<b>%{x}</b><br>Count: %{y}<extra></extra>")])
+        fig.update_layout(title="Work Orders by Priority", height=380, margin=dict(t=40, b=10), yaxis_title="Count", xaxis_title="")
         st.plotly_chart(fig, use_container_width=True)
 
     if not overdue.empty:
