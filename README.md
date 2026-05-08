@@ -2,38 +2,24 @@
 
 AI-powered predictive maintenance for industrial equipment — detect anomalies before they become failures, powered by Snowflake Cortex AI.
 
-## AWS Hero — Industrial AI Maintenance Co-pilot
+## Architecture
 
-Snowflake + **AWS IoT SiteWise** + **AWS Bedrock** (via Lambda) + **QuickSight**. SiteWise watches the sensors; Snowflake catches the anomaly; Bedrock writes the work order with parts, skills, ETA, and safety notes — one click for the technician.
+An industrial AI maintenance co-pilot built on **Snowflake** (Dynamic Tables, ML.ANOMALY_DETECTION, semantic view, Cortex Analyst, Cortex Complete) and **AWS** (IoT SiteWise, S3, Lambda, Bedrock, QuickSight + Amazon Q). SiteWise watches the sensors; Snowflake catches the anomaly; Bedrock writes the work order with parts, skills, ETA, and safety notes — one click for the technician.
 
 ```mermaid
 flowchart LR
-    Sensors[Crane / pump sensors] --> SW[AWS IoT SiteWise asset model]
-    SW --> S3[S3 sitewise/]
-    S3 --> SF[Snowflake EQUIPMENT_HEALTH + ANOMALY_ALERTS]
-    SF --> CX[Cortex anomaly + Cortex Complete]
+    Sensors[Crane and pump sensors] --> SW[AWS IoT SiteWise asset model]
+    SW --> S3[S3 sitewise hot tier]
+    S3 --> SF[Snowflake Dynamic Tables]
+    SF --> CX[Cortex anomaly detection]
     CX --> LAM[Lambda mfg-maint-workorder-bedrock]
     LAM --> BR[Bedrock Claude]
-    BR --> WO[Work order markdown]
+    BR --> WO[Structured work order]
     WO --> ST[Streamlit AI Work Order page]
+    SF --> SemView[Semantic View]
     SF --> QS[QuickSight + Amazon Q]
 ```
 
-
-## Architecture
-
-```
-┌─────────┐    ┌───────────────────────────────────────────────────────┐    ┌─────────────┐
-│  AWS S3 │───▶│                   SNOWFLAKE                           │───▶│  Streamlit  │
-│(Sensors)│    │  Stages → Dynamic Tables → ML Models → Cortex Agent  │    │  Dashboard  │
-└─────────┘    └───────────────────────────────────────────────────────┘    └─────────────┘
-                         │                        │
-                         ▼                        ▼
-                  ┌─────────────┐         ┌─────────────┐
-                  │  Semantic   │         │   Cortex    │
-                  │    View     │         │   Search    │
-                  └─────────────┘         └─────────────┘
-```
 
 ## Personas
 
