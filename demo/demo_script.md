@@ -30,23 +30,6 @@
 
 ---
 
-## Pre-Recording Checklist
-
-- [ ] `SELECT COUNT(*) FROM MANUFACTURING_MAINTENANCE.SITEWISE.ASSET_MODEL` returns 100
-- [ ] PUMP-063 vibration ~5.59 mm/s in `ANOMALY_ALERTS`
-- [ ] CRANE-007 in CRITICAL status (or comparable hero asset)
-- [ ] `CALL MANUFACTURING_MAINTENANCE.AI.SP_GENERATE_WORK_ORDER('PUMP-063')` returns full markdown work order in < 30s
-- [ ] Open Streamlit: https://app.snowflake.com/SFSEAPAC/sg_demo43/#/streamlit-apps/MANUFACTURING_MAINTENANCE.APP.PREDICTIVE_MAINTENANCE_APP
-- [ ] Open QuickSight: https://us-west-2.quicksight.aws.amazon.com/sn/dashboards/mfg-maintenance-dashboard
-- [ ] Pre-open AWS tabs:
-  - SiteWise: `https://us-west-2.console.aws.amazon.com/iotsitewise/home?region=us-west-2#/asset-models`
-  - Lambda: `https://us-west-2.console.aws.amazon.com/lambda/home?region=us-west-2#/functions/mfg-maint-workorder-bedrock`
-  - Bedrock: `https://us-west-2.console.aws.amazon.com/bedrock/home?region=us-west-2#/foundation-models`
-- [ ] Audio: quiet room, external mic
-- [ ] Resolution: 1920x1080
-
----
-
 ## Script
 
 ### [0:00–0:20] THE PROBLEM & ARCHITECTURE
