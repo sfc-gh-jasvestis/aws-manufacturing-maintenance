@@ -36,11 +36,19 @@
 
 ## Script
 
-### [0:00-0:20] THE PROBLEM
+### [0:00-0:25] THE PROBLEM
 
-**Show**: Streamlit Overview — critical asset banner
+**Show**: Streamlit Overview — critical asset banner + KPI row
 
-> "In this demo, we'll walk through a predictive maintenance pipeline built on Snowflake and AWS. We're monitoring a fleet of one hundred industrial assets — compressors, cranes, conveyors, pumps, generators — across three plants. Right now, Air Compressor 21 is at ten percent health and OFFLINE. Ten assets are in CRITICAL state. 161 anomaly alerts are active. Thirteen sensors have already breached safe limits. The question isn't *if* something fails — it's whether the maintenance team finds out before or after it happens. Let's show how this pipeline takes us from sensor reading to dispatched work order."
+> "In this demo, we'll walk through a predictive maintenance pipeline built on Snowflake and AWS. We're monitoring a fleet of one hundred industrial assets — compressors, cranes, conveyors, pumps, generators — across three plants."
+
+**Action**: Point to the red banner at the top
+
+> "This banner is telling us Air Compressor 21 is at ten percent health, temperature has exceeded the safe limit — 96 degrees versus a maximum of 85 — and it's OFFLINE."
+
+**Action**: Gesture across the five KPI cards left to right
+
+> "One hundred equipment in the fleet. Ten in CRITICAL — with thirteen sensors already breached. Seventeen warnings — fifty-five more sensors will breach within six hours. Eight OFFLINE. Average fleet health: sixty-six out of a hundred. The question isn't *if* something fails — it's whether the maintenance team finds out before or after it happens. Let's show how this pipeline takes us from sensor reading to dispatched work order."
 
 ### [0:20-0:45] AWS IoT SITEWISE — the digital twin
 
