@@ -1,25 +1,52 @@
 # Predictive Maintenance & Equipment Intelligence
 
-AI-powered predictive maintenance for industrial equipment — detect anomalies before they become failures, powered by Snowflake Cortex AI.
+AI-powered predictive maintenance for industrial equipment — detect anomalies before they become failures, predict remaining useful life, and auto-generate work orders. Powered by **Snowflake** (Dynamic Tables, ML Model Registry, Cortex AI) and **AWS** (IoT SiteWise, S3, Snowpipe, SNS, Lambda, Bedrock, QuickSight).
 
 ## Architecture
 
-An industrial AI maintenance co-pilot built on **Snowflake** (Dynamic Tables, ML.ANOMALY_DETECTION, semantic view, Cortex Analyst, Cortex Complete) and **AWS** (IoT SiteWise, S3, Lambda, Bedrock, QuickSight + Amazon Q). SiteWise watches the sensors; Snowflake catches the anomaly; Bedrock writes the work order with parts, skills, ETA, and safety notes — one click for the technician.
-
 ```mermaid
 flowchart LR
-    Sensors[Crane and pump sensors] --> SW[AWS IoT SiteWise asset model]
-    SW --> S3[S3 sitewise hot tier]
-    S3 --> SF[Snowflake Dynamic Tables]
-    SF --> CX[Cortex anomaly detection]
-    CX --> LAM[Lambda mfg-maint-workorder-bedrock]
-    LAM --> BR[Bedrock Claude]
-    BR --> WO[Structured work order]
-    WO --> ST[Streamlit AI Work Order page]
-    SF --> SemView[Semantic View]
-    SF --> QS[QuickSight + Amazon Q]
+    Sensors[Factory Sensors] --> SW[AWS IoT SiteWise]
+    SW --> S3[S3 hot tier]
+    S3 --> SP[Snowpipe AUTO_INGEST]
+    SP --> RAW[Snowflake RAW]
+    RAW --> DT[Dynamic Tables]
+    DT --> ML[Snowflake ML - RUL]
+    DT --> CX[Cortex Anomaly Detection]
+    ML --> ALT[Snowflake Alert]
+    ALT --> SNS[AWS SNS]
+    SNS --> TECH[Technician SMS/Email]
+    CX --> WO[Lambda + Bedrock]
+    WO --> ST[Streamlit App]
+    DT --> QS[QuickSight + Amazon Q]
+    DT --> SV[Semantic View]
+    SV --> AG[Cortex Agent]
 ```
 
+## Snowflake Capabilities
+
+| Capability | Object | Detail |
+|-----------|--------|--------|
+| Dynamic Tables | EQUIPMENT_HEALTH, ANOMALY_ALERTS, MAINTENANCE_SCHEDULE, RUL_PREDICTIONS | 1-5 min lag, auto-refresh |
+| Snowflake ML | ML.RUL_PREDICTOR (Model Registry) | XGBoost RUL model, warehouse inference |
+| ML Functions | ANOMALY_DETECTION | Time-series anomaly on vibration data |
+| Cortex Search | MAINTENANCE_DOCS_SEARCH | Full-text search on maintenance procedures |
+| Semantic View | MAINTENANCE_ANALYTICS_VIEW | Natural language analytics |
+| Cortex Agent | MAINTENANCE_AGENT | Orchestrates Analyst + Search + Charts |
+| Snowpipe | SENSOR_REALTIME_PIPE | AUTO_INGEST from S3 via SQS |
+| Alert | CRITICAL_EQUIPMENT_ALERT | Fires every 5 min on health < 20 |
+| Streamlit | PREDICTIVE_MAINTENANCE_APP | 8-page dashboard |
+
+## AWS Services
+
+| Service | Component | Purpose |
+|---------|-----------|---------|
+| IoT SiteWise | 100 assets, 3 plants, 8 lines | Digital twin of factory floor |
+| S3 | maintenance/realtime/ prefix | Sensor data landing zone |
+| SNS | mfg-maintenance-critical-alerts | Technician alert notifications |
+| Lambda | mfg-maint-workorder-bedrock | Bedrock work order generator |
+| Bedrock | Claude Sonnet 4.6 | Structured work order generation |
+| QuickSight | 2 dashboards + Amazon Q topics | Executive reporting |
 
 ## Personas
 
@@ -33,10 +60,13 @@ flowchart LR
 | Table | Rows | Description |
 |-------|------|-------------|
 | EQUIPMENT | 100 | Asset registry with specifications |
-| SENSOR_READINGS | 200,000 | IoT telemetry (vibration, temperature, pressure) |
+| SENSOR_READINGS | 200,000 | IoT telemetry (vibration, temperature, pressure, current, RPM) |
+| SENSOR_READINGS_REALTIME | ~500+ | Real-time Snowpipe-ingested sensor data |
 | WORK_ORDERS | 5,000 | Maintenance history and scheduling |
 | FAILURE_HISTORY | 500 | Past failures with root cause and cost |
 | MAINTENANCE_DOCS | 100 | Procedures, manuals, and safety protocols |
+| RUL_PREDICTIONS (DT) | 100 | ML predicted days-to-failure per equipment |
+| PLANT_HIERARCHY | 100 | SiteWise plant/line/equipment mapping |
 
 ## Build Instructions
 
@@ -45,7 +75,7 @@ flowchart LR
 - Cortex AI enabled (ML Functions, Search, Agent)
 - Warehouse: CORTEX (Medium)
 
-### Deployment
+### Core Snowflake (works standalone)
 
 ```bash
 snowsql -f snowflake/00_setup.sql
@@ -58,18 +88,41 @@ snowsql -f snowflake/06_semantic_view.sql
 snowsql -f snowflake/07_agent.sql
 ```
 
+### AWS Integrations (optional)
+
+See [aws/README.md](aws/README.md) for detailed step-by-step AWS setup.
+
+```bash
+snowsql -f snowflake/08_sitewise_workorder.sql
+snowsql -f snowflake/09_snowpipe_s3.sql
+snowsql -f snowflake/10_iot_sitewise.sql
+snowsql -f snowflake/11_snowflake_ml.sql
+snowsql -f snowflake/12_sns_alerts.sql
+```
+
+### ML Model Training (optional)
+
+```bash
+pip install snowflake-ml-python xgboost scikit-learn
+SNOWFLAKE_CONNECTION_NAME=<connection> python scripts/train_rul_model.py
+```
+
 ### Streamlit App
+
 ```
 MANUFACTURING_MAINTENANCE.APP.PREDICTIVE_MAINTENANCE_APP
 ```
 
+8 pages: Overview, Equipment Health, Anomaly Alerts, ML Predictions, Maintenance Schedule, Real-Time Ingestion, AI Work Order, Ask Maintenance
+
 ## Key Demo Numbers
 
-- **Crane 7** — vibration at 5.6 mm/s (threshold: 6.0)
-- **26 hours** until predicted failure
-- **$2.3M** average crane failure cost
-- **Reefer 12** — temperature drifting, secondary alert
-- **100 assets** monitored across the facility
+- **Air Compressor 21** — health 10/100, OFFLINE, 4 critical sensors (worst in fleet)
+- **12 equipment** at IMMINENT failure risk (<7 days predicted)
+- **161 active anomaly alerts**, 13 already breached
+- **$36M** maintenance backlog at risk
+- **100 assets** across 3 plants, 8 production lines
+- **5 AWS services** in one closed-loop pipeline
 
 ## License
 
