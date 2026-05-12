@@ -32,27 +32,6 @@
 
 ---
 
-## Pre-Recording Checklist
-
-- [ ] `SELECT STATUS, COUNT(*) FROM MANUFACTURING_MAINTENANCE.CURATED.EQUIPMENT_HEALTH GROUP BY STATUS` -> 10 CRITICAL, 17 WARNING, 65 OPERATIONAL, 8 OFFLINE
-- [ ] Air Compressor 21 (COMP-021) health score = 10 with 4 critical sensors (OFFLINE)
-- [ ] Air Compressor 33 (COMP-033) health score = 18 with 4 critical sensors (CRITICAL)
-- [ ] 161 active anomaly alerts across the fleet; 13 already breached
-- [ ] RUL predictions: 12 IMMINENT (<7d), 3 SOON (<30d), 13 MONITOR (<90d)
-- [ ] Snowpipe running: `SELECT SYSTEM$PIPE_STATUS('MANUFACTURING_MAINTENANCE.RAW.SENSOR_REALTIME_PIPE')` -> executionState: RUNNING
-- [ ] Run `python scripts/simulate_sensor_stream.py --batches 3 --upload` 5 min before recording (fresh S3 data)
-- [ ] `CALL MANUFACTURING_MAINTENANCE.AI.SP_GENERATE_WORK_ORDER('COMP-021')` returns work order in < 30s
-- [ ] Open Streamlit: `https://app.snowflake.com/<ORG>/<ACCOUNT>/#/streamlit-apps/MANUFACTURING_MAINTENANCE.APP.PREDICTIVE_MAINTENANCE_APP`
-- [ ] Open QuickSight: https://us-west-2.quicksight.aws.amazon.com/sn/dashboards/mfg-maintenance-dashboard
-- [ ] Pre-open AWS tabs:
-  - SiteWise: `https://us-west-2.console.aws.amazon.com/iotsitewise/home?region=us-west-2#/assets`
-  - S3: `https://us-west-2.console.aws.amazon.com/s3/buckets/sg-manufacturing-demos-2026?prefix=maintenance/realtime/`
-  - SNS: `https://us-west-2.console.aws.amazon.com/sns/v3/home?region=us-west-2#/topic/arn:aws:sns:us-west-2:<ACCOUNT_ID>:mfg-maintenance-critical-alerts`
-  - Lambda: `https://us-west-2.console.aws.amazon.com/lambda/home?region=us-west-2#/functions/mfg-maint-workorder-bedrock`
-  - Bedrock: `https://us-west-2.console.aws.amazon.com/bedrock/home?region=us-west-2#/foundation-models`
-- [ ] Audio: quiet room, external mic
-- [ ] Resolution: 1920x1080
-
 ---
 
 ## Script
