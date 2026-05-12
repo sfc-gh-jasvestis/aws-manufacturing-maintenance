@@ -54,21 +54,27 @@
 
 > "The numbers tell the story. Ten critical. Seventeen warnings. Eight offline. Average fleet health: sixty-six. This isn't a single machine problem — this is a fleet under stress. The question every plant manager asks: do we find out before the failure, or after? Let's walk through how this pipeline answers that."
 
-### [0:20-0:45] AWS IoT SITEWISE — the digital twin
+### [0:30-1:00] AWS IoT SITEWISE + SNOWPIPE — from sensor to Snowflake
 
-**Action**: Tab to AWS IoT SiteWise console -> show asset list (100 assets)
+**Action**: Click to Streamlit "Real-Time Ingestion (AWS IoT)" page
 
-> "This is where the data starts. **AWS IoT SiteWise** — the digital twin of the factory floor. Three plants: Singapore Jurong, Singapore Tuas, Batam. Eight production lines. One hundred industrial assets — compressors, cranes, conveyors, pumps, generators. Each one publishing vibration, temperature, and pressure every minute. SiteWise models the hierarchy: plant to line to asset to sensor. Click into any compressor — you see the live property values. This is the source of truth for the physical world."
+> "Let's start at the source. This page shows the **AWS IoT SiteWise** asset hierarchy mirrored in Snowflake. Three plants — Singapore Jurong, Singapore Tuas, Batam. Eight production lines. One hundred assets."
 
-**Action**: Click into a failing compressor asset to show properties
+**Action**: Expand "Singapore Jurong" to show production lines and equipment with health scores
 
-### [0:45-1:05] S3 + SNOWPIPE — real-time ingestion
+> "Every asset is publishing vibration, temperature, and pressure every minute. SiteWise models the full hierarchy — plant to line to machine to sensor."
 
-**Action**: Tab to S3 console -> show `maintenance/realtime/` prefix with recent CSV files
+**Action**: Quick tab to AWS SiteWise console — show the 101 assets in the list
 
-> "SiteWise exports to **Amazon S3** every minute. Here are the sensor CSVs landing in real-time — timestamped, one per batch. On the Snowflake side, **Snowpipe** with AUTO_INGEST watches this S3 prefix. No ETL code. No orchestration. Files land, SQS fires a notification, Snowpipe loads them into the `SENSOR_READINGS_REALTIME` table automatically. Zero-latency ingestion."
+> "Here's the actual SiteWise console — one hundred and one assets in the model. This is the digital twin of the factory floor."
 
-**Action**: Switch to Streamlit -> Real-Time Ingestion page -> show latest readings
+**Action**: Quick tab to S3 console — show `maintenance/realtime/` prefix with recent CSVs
+
+> "SiteWise exports to **Amazon S3**. Here are the sensor CSVs landing — timestamped, one per batch. On the Snowflake side, **Snowpipe** watches this S3 prefix with AUTO_INGEST. Files land, SQS fires, data loads. No ETL code. No orchestration."
+
+**Action**: Back to Streamlit — scroll down to show latest Snowpipe readings table
+
+> "And here are those readings arriving in Snowflake in real-time."
 
 ### [1:05-1:30] ML PREDICTIONS — Snowflake ML
 
