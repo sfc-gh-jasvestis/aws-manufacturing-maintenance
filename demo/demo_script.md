@@ -40,7 +40,7 @@
 
 **Show**: Streamlit Overview — critical asset banner
 
-> "Air Compressor 21. Health score: ten out of a hundred. Four sensors critical. Status: OFFLINE. This asset is the worst in a fleet of one hundred — and it's not alone. Ten equipment in CRITICAL state, seventeen in WARNING, eight OFFLINE. The maintenance crew is managing 161 active anomaly alerts with $36 million in maintenance backlog. In the next four minutes, I'll show you how we go from sensor to dispatch — using five AWS services and Snowflake AI — in a single pipeline."
+> "In this demo, we'll walk through a predictive maintenance pipeline built on Snowflake and AWS. We're monitoring a fleet of one hundred industrial assets — compressors, cranes, conveyors, pumps, generators — across three plants. Right now, Air Compressor 21 is at ten percent health and OFFLINE. Ten assets are in CRITICAL state. 161 anomaly alerts are active. Thirteen sensors have already breached safe limits. The question isn't *if* something fails — it's whether the maintenance team finds out before or after it happens. Let's show how this pipeline takes us from sensor reading to dispatched work order."
 
 ### [0:20-0:45] AWS IoT SITEWISE — the digital twin
 

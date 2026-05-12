@@ -88,11 +88,13 @@ if page == "Overview":
         breached = hero_alerts[hero_alerts["HOURS_TO_BREACH_ESTIMATE"] < 0]
         if not breached.empty:
             worst = breached.iloc[0]
-            st.error(f"🚨 CRITICAL FAILURE RISK: {hero['NAME']} at {int(hero['HEALTH_SCORE'])}% health — {worst['SENSOR_TYPE'].replace('_', ' ')} EXCEEDED SAFE LIMIT ({worst['CURRENT_VALUE']:.1f} vs max {worst['THRESHOLD_HIGH']:.0f}) — {breached_total} sensors breached fleet-wide, {breach_6h} more within 6h — ${s['COST_USD'].sum()/1e6:.0f}M maintenance backlog at risk")
+            sensor_label = worst['SENSOR_TYPE'].replace('_mm_s','').replace('_c','').replace('_bar','').replace('_a','').replace('_', ' ').title()
+            st.error(f"🚨 CRITICAL FAILURE RISK: {hero['NAME']} at {int(hero['HEALTH_SCORE'])}% health — {sensor_label} EXCEEDED SAFE LIMIT ({worst['CURRENT_VALUE']:.1f} vs max {worst['THRESHOLD_HIGH']:.0f}) — {breached_total} sensors breached fleet-wide, {breach_6h} more within 6h — ${s['COST_USD'].sum()/1e6:.0f}M maintenance backlog at risk")
         elif not hero_alerts.empty:
             worst = hero_alerts.iloc[0]
             hrs = worst["HOURS_TO_BREACH_ESTIMATE"] if pd.notna(worst["HOURS_TO_BREACH_ESTIMATE"]) else 6
-            st.error(f"🚨 CRITICAL FAILURE RISK: {hero['NAME']} at {int(hero['HEALTH_SCORE'])}% health — {worst['SENSOR_TYPE'].replace('_', ' ')} approaching limit ({worst['CURRENT_VALUE']:.1f} / {worst['THRESHOLD_HIGH']:.0f}), breach in ~{hrs:.0f}h — {breach_6h} sensors fleet-wide within 6h — ${s['COST_USD'].sum()/1e6:.0f}M maintenance backlog at risk")
+            sensor_label = worst['SENSOR_TYPE'].replace('_mm_s','').replace('_c','').replace('_bar','').replace('_a','').replace('_', ' ').title()
+            st.error(f"🚨 CRITICAL FAILURE RISK: {hero['NAME']} at {int(hero['HEALTH_SCORE'])}% health — {sensor_label} approaching limit ({worst['CURRENT_VALUE']:.1f} / {worst['THRESHOLD_HIGH']:.0f}), breach in ~{hrs:.0f}h — {breach_6h} sensors fleet-wide within 6h — ${s['COST_USD'].sum()/1e6:.0f}M maintenance backlog at risk")
 
     c1, c2, c3, c4, c5 = st.columns(5)
     c1.metric("Equipment", len(h))
