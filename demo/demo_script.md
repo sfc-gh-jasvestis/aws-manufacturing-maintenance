@@ -85,7 +85,7 @@
 
 **Tech**: Snowflake Model Registry + XGBoost + Dynamic Table
 
-> "Here's where Snowflake ML replaces SageMaker. We trained an **XGBoost model** on 200,000 sensor readings and 500 historical failures — and registered it in the **Snowflake Model Registry**. The model predicts Remaining Useful Life — how many days until each asset fails. Twelve equipment at IMMINENT risk — less than seven days. Air Compressor 21: five days to predicted failure. The scatter plot tells the story: bottom-left quadrant is the danger zone — low health, few days left. The Dynamic Table `RUL_PREDICTIONS` re-runs inference every five minutes. No external ML infrastructure. No data movement. Training, registry, and inference — all in Snowflake."
+> "**Snowflake ML** — machine learning built into the data platform. We trained an **XGBoost model** on 200,000 sensor readings and 500 historical failures — and registered it in the **Snowflake Model Registry**. The model predicts Remaining Useful Life — how many days until each asset fails. Twelve equipment at IMMINENT risk — less than seven days. Air Compressor 21: five days to predicted failure. The scatter plot tells the story: bottom-left quadrant is the danger zone — low health, few days left. The Dynamic Table `RUL_PREDICTIONS` re-runs inference every five minutes. No external ML infrastructure. No data movement. Training, registry, and inference — all in Snowflake."
 
 ### [1:30-1:50] ANOMALY ALERTS — 161 active threats
 
