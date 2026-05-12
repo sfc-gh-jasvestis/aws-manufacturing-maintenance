@@ -146,13 +146,4 @@
 
 ---
 
-## AWS Tab-Switch Quick Reference
 
-| When | Service | URL |
-|------|---------|-----|
-| 0:20 | IoT SiteWise | `us-west-2.console.aws.amazon.com/iotsitewise/home?region=us-west-2#/assets` |
-| 0:45 | S3 | `s3/buckets/sg-manufacturing-demos-2026?prefix=maintenance/realtime/` |
-| 1:50 | SNS | `sns/v3/home?region=us-west-2#/topic/arn:aws:sns:us-west-2:<ACCOUNT_ID>:mfg-maintenance-critical-alerts` |
-| 2:35 | Lambda | `lambda/home?region=us-west-2#/functions/mfg-maint-workorder-bedrock` |
-| 2:40 | Bedrock | `bedrock/home?region=us-west-2#/foundation-models` |
-| 2:45 | QuickSight | `quicksight.aws.amazon.com/sn/dashboards/mfg-maintenance-dashboard` |
