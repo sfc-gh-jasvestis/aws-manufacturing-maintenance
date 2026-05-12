@@ -44,7 +44,7 @@
 
 **Action**: Point to the red banner at the top
 
-> "This banner is telling us Air Compressor 21 is at ten percent health, temperature has exceeded the safe limit — 96 degrees versus a maximum of 85 — and it's OFFLINE."
+> "This banner is telling us Air Compressor 21 is at ten percent health — temperature has exceeded the safe limit, 96 degrees versus a maximum of 85. Thirteen sensors breached fleet-wide, fifty-five more within six hours, and a thirty-five million dollar maintenance backlog at risk."
 
 **Action**: Gesture across the five KPI cards left to right
 
