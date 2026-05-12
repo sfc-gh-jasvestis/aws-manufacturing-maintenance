@@ -147,9 +147,9 @@
 
 > "Natural language over the same data. **Cortex Analyst** and the `MAINTENANCE_ANALYTICS_VIEW`. 'Which equipment has the lowest health?' — Air Compressor 21, health ten. Same semantic layer for the technician, the planner, the plant manager, and the AI agent."
 
-### [3:55-4:15] CLOSE — the full pipeline
+### [3:55-4:10] CLOSE
 
-> "Recap. Five AWS services, one Snowflake platform, one closed loop. **IoT SiteWise** is the digital twin — three plants, one hundred assets. **S3** is the hot tier; **Snowpipe** auto-ingests in real-time. **Snowflake ML** predicts Remaining Useful Life — twelve assets at imminent risk. **SNS** notifies the technician when health drops below threshold. **Bedrock** writes the work order. **Cortex Search** finds the repair history, the OEM manual, and the safety procedure across 416 documents. **QuickSight** gives the executive the portfolio view. Ten critical assets. 161 active alerts. Twelve predicted to fail within seven days. 416 documents searchable in milliseconds. One AI co-pilot that sees it all, predicts the failure, alerts the team, writes the work order, *and* arms the technician with the knowledge to do the job safely. That's **Predictive Maintenance** on Snowflake and AWS."
+> "One pipeline. Sensor to dispatch. **IoT SiteWise** sees the vibration spike. **Snowpipe** lands the data in seconds. **Snowflake ML** predicts the failure days before it happens. **SNS** wakes up the technician. **Bedrock** writes the work order. **Cortex Search** hands them the manual, the repair history, and the safety procedure. One hundred assets. Twelve about to fail. Zero surprises. That's predictive maintenance — and *that's* what happens when Snowflake and AWS work together."
 
 ---
 
