@@ -84,13 +84,19 @@
 
 > "**Snowflake ML** — machine learning built into the data platform. We trained an **XGBoost model** on 200,000 sensor readings and 500 historical failures — and registered it in the **Snowflake Model Registry**. The model predicts Remaining Useful Life — how many days until each asset fails. Twelve equipment at IMMINENT risk — less than seven days. Air Compressor 21: five days to predicted failure. The scatter plot tells the story: bottom-left quadrant is the danger zone — low health, few days left. The Dynamic Table `RUL_PREDICTIONS` re-runs inference every five minutes. No external ML infrastructure. No data movement. Training, registry, and inference — all in Snowflake."
 
-### [1:30-1:50] ANOMALY ALERTS — 161 active threats
+### [1:30-1:50] ANOMALY ALERTS — the threat landscape
 
-**Show**: Streamlit Anomaly Alerts page — breach chart, alert table
+**Show**: Streamlit Anomaly Alerts page — KPI cards + breach chart + alert table
 
 **Tech**: ML.ANOMALY_DETECTION + threshold tracking
 
-> "One hundred and sixty-one active anomaly alerts. Thirteen already breached — negative hours-to-breach means they're *past* the safe limit right now. Fifty-five more will breach within six hours. Air Compressor 21 — four sensors critical, all trending INCREASING. Without predictive maintenance, we find out when the bearing seizes. With this, we see it coming days ahead."
+**Action**: Point to the four KPI cards
+
+> "One hundred and sixty-one active anomaly alerts. Thirteen already breached — those are sensors *past* the safe limit right now. A hundred and twenty trending in the wrong direction. Seventy-three will breach within six hours."
+
+**Action**: Point to the horizontal bar chart
+
+> "This chart ranks the most urgent. Reefer Units 87, 86, 83 — twelve hours past breach. Air Compressor 21 and 33 are in there too. The deeper the red, the longer it's been past threshold. Below that, the full alert detail table — every sensor, every reading, every trend direction. This is the early warning system."
 
 ### [1:50-2:15] SNS ALERTS — technician notification
 
