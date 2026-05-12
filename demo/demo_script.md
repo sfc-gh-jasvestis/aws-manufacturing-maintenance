@@ -36,19 +36,23 @@
 
 ## Script
 
-### [0:00-0:25] THE PROBLEM
+### [0:00-0:30] THE PROBLEM
 
-**Show**: Streamlit Overview — critical asset banner + KPI row
+**Show**: Streamlit Overview — critical asset banner + KPI row + charts
 
-> "In this demo, we'll walk through a predictive maintenance pipeline built on Snowflake and AWS. We're monitoring a fleet of one hundred industrial assets — compressors, cranes, conveyors, pumps, generators — across three plants."
+> "In this demo, we'll walk through an end-to-end predictive maintenance pipeline built on Snowflake and AWS."
 
-**Action**: Point to the red banner at the top
+**Action**: Pause on the Overview page — let the viewer take in the dashboard
 
-> "This banner is telling us Air Compressor 21 is at ten percent health — temperature has exceeded the safe limit, 96 degrees versus a maximum of 85. Thirteen sensors breached fleet-wide, fifty-five more within six hours, and a thirty-five million dollar maintenance backlog at risk."
+> "We're looking at a fleet of one hundred industrial assets across three manufacturing plants — compressors, cranes, conveyors, pumps, and generators. Every one of them is streaming sensor data: vibration, temperature, pressure, current."
 
-**Action**: Gesture across the five KPI cards left to right
+**Action**: Point to the red banner
 
-> "One hundred equipment in the fleet. Ten in CRITICAL — with thirteen sensors already breached. Seventeen warnings — fifty-five more sensors will breach within six hours. Eight OFFLINE. Average fleet health: sixty-six out of a hundred. The question isn't *if* something fails — it's whether the maintenance team finds out before or after it happens. Let's show how this pipeline takes us from sensor reading to dispatched work order."
+> "This red banner is the headline. Air Compressor 21 — health score ten out of a hundred. Temperature has blown past the safe limit: ninety-six degrees against a maximum of eighty-five. Thirteen sensors across the fleet have already breached. Fifty-five more are trending toward breach within six hours. Thirty-five million dollars in maintenance backlog sitting behind it."
+
+**Action**: Gesture across the KPI cards
+
+> "The numbers tell the story. Ten critical. Seventeen warnings. Eight offline. Average fleet health: sixty-six. This isn't a single machine problem — this is a fleet under stress. The question every plant manager asks: do we find out before the failure, or after? Let's walk through how this pipeline answers that."
 
 ### [0:20-0:45] AWS IoT SITEWISE — the digital twin
 
