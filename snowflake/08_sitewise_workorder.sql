@@ -10,7 +10,7 @@
 -- For this demo, the "Bedrock" call uses Snowflake Cortex Complete (Claude on
 -- Snowflake) so the demo runs without any AWS API integration. In production
 -- the customer swaps the SP body to an external function pointing at
--- arn:aws:lambda:us-west-2:018437500440:function:mfg-maint-workorder-bedrock.
+-- arn:aws:lambda:<REGION>:<ACCOUNT_ID>:function:mfg-maint-workorder-bedrock.
 -- ============================================================================
 CREATE SCHEMA IF NOT EXISTS MANUFACTURING_MAINTENANCE.SITEWISE;
 

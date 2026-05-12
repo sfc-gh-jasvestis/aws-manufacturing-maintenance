@@ -18,8 +18,8 @@ CREATE OR REPLACE NOTIFICATION INTEGRATION MAINTENANCE_SNS_INT
   DIRECTION = OUTBOUND
   TYPE = QUEUE
   NOTIFICATION_PROVIDER = AWS_SNS
-  AWS_SNS_TOPIC_ARN = 'arn:aws:sns:us-west-2:018437500440:mfg-maintenance-critical-alerts'
-  AWS_SNS_ROLE_ARN = 'arn:aws:iam::018437500440:role/snowflake-maintenance-sns-role';
+  AWS_SNS_TOPIC_ARN = 'arn:aws:sns:us-west-2:<ACCOUNT_ID>:mfg-maintenance-critical-alerts'
+  AWS_SNS_ROLE_ARN = 'arn:aws:iam::<ACCOUNT_ID>:role/snowflake-maintenance-sns-role';
 
 -- After creating, run DESC NOTIFICATION INTEGRATION MAINTENANCE_SNS_INT
 -- to get SF_AWS_IAM_USER_ARN and SF_AWS_EXTERNAL_ID for the IAM trust policy.

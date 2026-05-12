@@ -139,7 +139,7 @@ aws iam create-role --role-name snowflake-maintenance-sns-role \
     "Version":"2012-10-17",
     "Statement":[{
       "Effect":"Allow",
-      "Principal":{"AWS":"arn:aws:iam::891377248908:root"},
+      "Principal":{"AWS":"<SF_AWS_IAM_USER_ARN>"},
       "Action":"sts:AssumeRole",
       "Condition":{"StringEquals":{"sts:ExternalId":"placeholder"}}
     }]

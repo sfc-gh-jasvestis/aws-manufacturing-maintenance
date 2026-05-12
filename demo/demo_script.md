@@ -42,12 +42,12 @@
 - [ ] Snowpipe running: `SELECT SYSTEM$PIPE_STATUS('MANUFACTURING_MAINTENANCE.RAW.SENSOR_REALTIME_PIPE')` -> executionState: RUNNING
 - [ ] Run `python scripts/simulate_sensor_stream.py --batches 3 --upload` 5 min before recording (fresh S3 data)
 - [ ] `CALL MANUFACTURING_MAINTENANCE.AI.SP_GENERATE_WORK_ORDER('COMP-021')` returns work order in < 30s
-- [ ] Open Streamlit: https://app.snowflake.com/SFSEAPAC/sg_demo43/#/streamlit-apps/MANUFACTURING_MAINTENANCE.APP.PREDICTIVE_MAINTENANCE_APP
+- [ ] Open Streamlit: `https://app.snowflake.com/<ORG>/<ACCOUNT>/#/streamlit-apps/MANUFACTURING_MAINTENANCE.APP.PREDICTIVE_MAINTENANCE_APP`
 - [ ] Open QuickSight: https://us-west-2.quicksight.aws.amazon.com/sn/dashboards/mfg-maintenance-dashboard
 - [ ] Pre-open AWS tabs:
   - SiteWise: `https://us-west-2.console.aws.amazon.com/iotsitewise/home?region=us-west-2#/assets`
   - S3: `https://us-west-2.console.aws.amazon.com/s3/buckets/sg-manufacturing-demos-2026?prefix=maintenance/realtime/`
-  - SNS: `https://us-west-2.console.aws.amazon.com/sns/v3/home?region=us-west-2#/topic/arn:aws:sns:us-west-2:018437500440:mfg-maintenance-critical-alerts`
+  - SNS: `https://us-west-2.console.aws.amazon.com/sns/v3/home?region=us-west-2#/topic/arn:aws:sns:us-west-2:<ACCOUNT_ID>:mfg-maintenance-critical-alerts`
   - Lambda: `https://us-west-2.console.aws.amazon.com/lambda/home?region=us-west-2#/functions/mfg-maint-workorder-bedrock`
   - Bedrock: `https://us-west-2.console.aws.amazon.com/bedrock/home?region=us-west-2#/foundation-models`
 - [ ] Audio: quiet room, external mic
@@ -173,7 +173,7 @@
 |------|---------|-----|
 | 0:20 | IoT SiteWise | `us-west-2.console.aws.amazon.com/iotsitewise/home?region=us-west-2#/assets` |
 | 0:45 | S3 | `s3/buckets/sg-manufacturing-demos-2026?prefix=maintenance/realtime/` |
-| 1:50 | SNS | `sns/v3/home?region=us-west-2#/topic/arn:aws:sns:us-west-2:018437500440:mfg-maintenance-critical-alerts` |
+| 1:50 | SNS | `sns/v3/home?region=us-west-2#/topic/arn:aws:sns:us-west-2:<ACCOUNT_ID>:mfg-maintenance-critical-alerts` |
 | 2:35 | Lambda | `lambda/home?region=us-west-2#/functions/mfg-maint-workorder-bedrock` |
 | 2:40 | Bedrock | `bedrock/home?region=us-west-2#/foundation-models` |
 | 2:45 | QuickSight | `quicksight.aws.amazon.com/sn/dashboards/mfg-maintenance-dashboard` |

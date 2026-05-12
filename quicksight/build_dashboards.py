@@ -2,12 +2,13 @@
 """Build/refresh QuickSight datasets + dashboards + Q topics for all 16 demos.
 Reuses snowflake-demos-ds, applies snowflake-demo-theme, 4 KPI + 2 chart layout."""
 import json
+import os
 import subprocess
 import sys
 import uuid
 import argparse
 
-ACCOUNT = "018437500440"
+ACCOUNT = os.environ.get("AWS_ACCOUNT_ID", "<ACCOUNT_ID>")
 REGION = "us-west-2"
 DS_ARN = f"arn:aws:quicksight:{REGION}:{ACCOUNT}:datasource/snowflake-demos-ds"
 THEME_ARN = f"arn:aws:quicksight:{REGION}:{ACCOUNT}:theme/snowflake-demo-theme"
