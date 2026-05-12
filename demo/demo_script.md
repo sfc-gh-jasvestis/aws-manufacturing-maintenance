@@ -157,7 +157,7 @@
 
 1. **Closed-loop pipeline** — most demos show one or two services. This one shows five AWS services + Snowflake AI in one continuous flow: sensor -> ingest -> predict -> alert -> dispatch -> report.
 2. **Real-time ingestion** — Snowpipe AUTO_INGEST from S3 with SQS notifications. Not batch. Not scheduled. Files land, data loads.
-3. **Snowflake ML replaces SageMaker** — XGBoost model trained, registered, and serving inference entirely inside Snowflake. No external ML infrastructure.
+3. **Snowflake ML** — XGBoost model trained, registered, and serving inference entirely inside Snowflake. No external ML infrastructure.
 4. **IoT SiteWise asset hierarchy** — 3 plants, 8 production lines, 100 assets. The digital twin mirrors the physical factory.
 5. **Proactive alerting** — Snowflake Alert + SNS means the technician knows before the machine breaks.
 6. **Bedrock structured output** — work-order Markdown is dispatchable, not a chat transcript.

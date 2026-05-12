@@ -103,7 +103,7 @@ snowsql -f snowflake/10_iot_sitewise.sql
 
 ---
 
-## Step 4: Snowflake ML Model (replaces SageMaker)
+## Step 4: Snowflake ML Model
 
 Create training data view and RUL predictions Dynamic Table:
 

@@ -2,7 +2,7 @@
 -- 11_snowflake_ml.sql
 -- Snowflake ML: XGBoost Remaining Useful Life (RUL) model
 -- ============================================================================
--- Replaces SageMaker. Trains on sensor + failure history, predicts days to
+-- Snowflake ML: Trains on sensor + failure history, predicts days to
 -- next failure for each equipment. Model registered in ML.REGISTRY.
 -- ============================================================================
 USE SCHEMA MANUFACTURING_MAINTENANCE.ML;
