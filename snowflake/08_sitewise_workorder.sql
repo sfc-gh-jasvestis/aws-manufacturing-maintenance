@@ -41,11 +41,14 @@ SELECT
 FROM MANUFACTURING_MAINTENANCE.CURATED.EQUIPMENT_HEALTH;
 
 -- Reference view that resembles the SiteWise hot-tier export
+-- NOTE: 10_iot_sitewise.sql rebuilds this view with PLANT_HIERARCHY joins.
+-- This definition is the baseline; script 10 adds PLANT_NAME / PRODUCTION_LINE.
 CREATE OR REPLACE VIEW MANUFACTURING_MAINTENANCE.SITEWISE.VW_SENSOR_ROLLUP AS
 SELECT
+    ph.PLANT_NAME,
+    ph.PRODUCTION_LINE,
     am.ASSET_ID,
     am.ASSET_NAME,
-    am.PARENT_ASSET,
     eh.HEALTH_SCORE,
     eh.CRITICAL_SENSORS,
     eh.WARNING_SENSORS,
@@ -58,7 +61,8 @@ SELECT
     aa.HOURS_TO_BREACH_ESTIMATE AS HOURS_TO_BREACH
 FROM MANUFACTURING_MAINTENANCE.SITEWISE.ASSET_MODEL am
 JOIN MANUFACTURING_MAINTENANCE.CURATED.EQUIPMENT_HEALTH eh ON am.ASSET_ID = eh.EQUIPMENT_ID
-LEFT JOIN MANUFACTURING_MAINTENANCE.CURATED.ANOMALY_ALERTS aa ON aa.EQUIPMENT_ID = am.ASSET_ID;
+LEFT JOIN MANUFACTURING_MAINTENANCE.CURATED.ANOMALY_ALERTS aa ON aa.EQUIPMENT_ID = am.ASSET_ID
+LEFT JOIN MANUFACTURING_MAINTENANCE.SITEWISE.PLANT_HIERARCHY ph ON ph.EQUIPMENT_ID = am.ASSET_ID;
 
 -- ----------------------------------------------------------------------------
 -- SP_GENERATE_WORK_ORDER
@@ -76,7 +80,7 @@ DECLARE
 BEGIN
     SELECT
         'Asset: '            || ASSET_NAME      || '\n' ||
-        'Location: '         || PARENT_ASSET    || '\n' ||
+        'Location: '         || COALESCE(PLANT_NAME,'') || ' / ' || COALESCE(PRODUCTION_LINE,'') || '\n' ||
         'Status: '           || STATUS          || '\n' ||
         'Criticality: '      || CRITICALITY     || '\n' ||
         'Health score: '     || HEALTH_SCORE::STRING    || '\n' ||
