@@ -1,0 +1,126 @@
+{
+  "version": 1,
+  "repo": "aws-singapore-manufacturing-maintenance",
+  "canonical_database": "SINGAPORE_MANUFACTURING_MAINTENANCE",
+  "operation": "on-demand",
+  "data_classification": "synthetic demonstration only",
+  "currency": "none (no monetary measures)",
+  "grains": {
+    "RAW.MACHINES": "one production asset per ID; 24 synthetic assets (CNC machining centers, stamping presses, injection molding machines, industrial robots) at six plants of the fictional Straits Precision Components in Singapore (Tuas, Woodlands, Ang Mo Kio, Seletar, Jurong East, Tampines), with HASH-seeded age, class, reliability, shift and PM profile",
+    "RAW.SENSOR_READINGS": "one asset-day per ENTITY_ID and EVENT_DATE; daily aggregates, not individual sensor packets",
+    "RAW.SPARE_PARTS": "one required spare-part type per asset at snapshot date",
+    "CURATED.PERFORMANCE_SUMMARY": "one asset over the entire 90-day observation window",
+    "CURATED.TREND_ANALYSIS": "one day over the asset fleet",
+    "ML.FAILURE_RISK_SCORES": "one asset scored on its latest observation day",
+    "RAW.LIVE_TELEMETRY": "one IoT Core message (simulated sensor reading) loaded by Snowpipe",
+    "ML.VIBRATION_ANOMALIES": "one asset-day in the last 15 days, scored against the prior 75-day baseline"
+  },
+  "metrics": {
+    "uptime_pct": {
+      "formula": "100 * SUM(OPERATING_HOURS) / NULLIF(SUM(PLANNED_HOURS), 0)",
+      "unit": "%"
+    },
+    "unplanned_stops": {
+      "formula": "SUM(FAILURE_COUNT)",
+      "unit": "events"
+    },
+    "mtbf_hours": {
+      "formula": "SUM(OPERATING_HOURS) / NULLIF(SUM(FAILURE_COUNT), 0)",
+      "unit": "hours",
+      "zero_failures": "null; not an infinite or zero MTBF estimate"
+    },
+    "equipment_managed": {
+      "formula": "COUNT of RAW.MACHINES",
+      "unit": "assets"
+    },
+    "parts_on_order": {
+      "formula": "SUM(ON_ORDER_QTY) at snapshot date",
+      "unit": "parts"
+    },
+    "spare_coverage_pct": {
+      "formula": "100 * SUM(LEAST(ON_HAND_QTY, REQUIRED_QTY)) / NULLIF(SUM(REQUIRED_QTY), 0)",
+      "unit": "%"
+    },
+    "pm_compliance_pct": {
+      "formula": "100 * SUM(PM_COMPLETED) / NULLIF(SUM(PM_DUE), 0)",
+      "unit": "%"
+    },
+    "yield_pct": {
+      "formula": "100 * SUM(GOOD_UNITS) / NULLIF(SUM(TOTAL_UNITS), 0)",
+      "unit": "%"
+    }
+  },
+  "chart_bindings": {
+    "uptime_trend": [
+      "METRIC_DATE",
+      "AVG_EQUIPMENT_UPTIME"
+    ],
+    "downtime_root_cause": [
+      "ROOT_CAUSE",
+      "DOWNTIME_HOURS"
+    ],
+    "pm_vs_yield": [
+      "PM_COMPLIANCE_PCT",
+      "YIELD_PCT"
+    ],
+    "failure_risk": [
+      "ENTITY_ID",
+      "FAILURE_PROB_7D",
+      "RISK_BAND"
+    ],
+    "downtime_forecast": [
+      "FORECAST_DATE",
+      "DOWNTIME_HOURS",
+      "LOWER_BOUND",
+      "UPPER_BOUND"
+    ],
+    "quicksight_downtime_by_machine": [
+      "ENTITY_ID",
+      "SUM(DOWNTIME_HOURS)"
+    ],
+    "live_telemetry": [
+      "MACHINE_ID",
+      "EVENT_TS",
+      "VIBRATION_MM_S",
+      "TEMPERATURE_C",
+      "STATUS"
+    ],
+    "vibration_anomalies": [
+      "ENTITY_ID",
+      "EVENT_DATE",
+      "VIBRATION",
+      "EXPECTED",
+      "UPPER_BOUND"
+    ],
+    "quicksight_failure_risk": [
+      "ENTITY_ID",
+      "MAX(FAILURE_PROB_7D)"
+    ]
+  },
+  "freshness": "MAX(EVENT_DATE) is an observation watermark; requestedAt is not freshness",
+  "required_capabilities": {
+    "core_pipeline": "Curated KPIs reconcile to a RAW recomputation",
+    "forecast_and_anomaly": "14-day fleet downtime FORECAST; vibration ANOMALY_DETECTION (train 75 days, detect last 15; 17 of 384 asset-days flagged)",
+    "search": "Cortex Search SEARCH.MAINTENANCE_SOP_SEARCH over 16 synthetic SOPs (one per equipment class and failure mode)",
+    "semantic_analytics": "semantic view APP.MAINTENANCE_ANALYTICS (unplanned stops sum to 158, matching the KPI) and Cortex Agent APP.MAINTENANCE_AGENT using analyst + search tools",
+    "grounded_ai": "agent answers return generated SQL and SOP citations; action memo by Cortex AI_COMPLETE (Snowflake build) or Amazon Bedrock Claude via external-access UDF APP.BEDROCK_GENERATE (AWS build)",
+    "quicksight": "DIRECT_QUERY dashboard (KPIs, daily uptime, downtime by machine, failure risk, IoT message count) through a read-only Snowflake service user",
+    "quicksight_q": "Amazon Q topic over the curated datasets for natural-language questions",
+    "aws_ingestion": "IoT Core rule -> S3 -> Snowpipe AUTO_INGEST into RAW.LIVE_TELEMETRY",
+    "notifications": "APP.LIVE_ALARM_ALERT logs new ALARM readings to APP.ALERT_LOG and emails via SYSTEM$SEND_EMAIL; alert and tasks suspended between demos",
+    "orchestration": "task graph APP.TASK_REFRESH_CURATED -> APP.TASK_RESCORE_RISK run on demand (EXECUTE TASK)",
+    "app_deployment": "SPCS service APP.SG_MANUFACTURING_MAINTENANCE_APP; routes /api/data, /api/ask, /api/agent",
+    "failure_risk_model": "Snowflake ML CLASSIFICATION of an unplanned stop in the next 7 days; out-of-time holdout precision 0.47 / recall 0.41 at 0.5 vs 0.24 base rate"
+  },
+  "builds": {
+    "snowflake": {
+      "database": "SINGAPORE_MANUFACTURING_MAINTENANCE_SNOWFLAKE",
+      "app_setting": "DEMO_PLATFORM=snowflake"
+    },
+    "aws": {
+      "database": "SINGAPORE_MANUFACTURING_MAINTENANCE_AWS",
+      "app_setting": "DEMO_PLATFORM=aws",
+      "capabilities": "see required_capabilities"
+    }
+  }
+}

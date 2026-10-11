@@ -1,0 +1,76 @@
+{
+  "title": "Singapore Discrete Manufacturing Predictive Maintenance",
+  "duration": "6 minutes",
+  "thesis": "Snowflake turns daily readings from a synthetic fleet of CNC machining centers, stamping presses, injection molding machines and industrial robots at six Singapore plants of the fictional Straits Precision Components into uptime KPIs, 7-day failure-risk scores, vibration anomalies and grounded AI answers, all on curated dynamic tables.",
+  "tabs": [
+    {
+      "id": "executive-cockpit",
+      "persona": { "name": "Nurul Huda Rahim", "role": "VP Manufacturing Operations (fictional)", "avatar": "" },
+      "talking_points": [
+        "Uptime, unplanned stops, MTBF and spare coverage for 24 production assets at plants in Tuas, Woodlands, Ang Mo Kio, Seletar, Jurong East and Tampines.",
+        "Each KPI is an explicit numerator over a denominator in a curated dynamic table, traceable to asset-day rows.",
+        "The downtime chart ranks root causes by hours lost, from spindle bearings to hydraulic leaks."
+      ],
+      "show": ["KPI cards", "Daily equipment uptime", "Downtime by root cause", "Equipment table"],
+      "call_out": "One governed set of plant KPIs across every Singapore site",
+      "transition": { "next_tab": "predictive", "line": "Which assets are likely to stop next?" }
+    },
+    {
+      "id": "predictive",
+      "persona": { "name": "Darren Koh", "role": "Reliability Engineer (fictional)", "avatar": "" },
+      "talking_points": [
+        "Snowflake ML classification scores each asset's probability of an unplanned stop in the next 7 days.",
+        "The holdout line reports precision and recall on the most recent labelled days, next to the base rate, so the model is judged honestly.",
+        "Anomaly detection flags vibration outliers per asset, and the forecast projects fleet downtime hours for 14 days."
+      ],
+      "show": ["Holdout metrics", "Failure risk by machine", "Downtime forecast", "Vibration anomalies"],
+      "call_out": "Evaluated ML that runs where the plant data lives",
+      "transition": { "next_tab": "planning", "line": "Do we have the parts and the PM discipline to respond?" }
+    },
+    {
+      "id": "planning",
+      "persona": { "name": "Darren Koh", "role": "Reliability Engineer (fictional)", "avatar": "" },
+      "talking_points": [
+        "Parts on order and spare coverage show whether bearing kits, seal kits, heater bands and servo modules are on hand.",
+        "PM compliance against yield by asset shows where the two move together; it is an association, not proof of cause.",
+        "The action memo drafts three prioritised actions for Nurul from the KPI, downtime and risk tables only."
+      ],
+      "show": ["Parts and spare coverage", "PM compliance vs yield", "Action memo"],
+      "call_out": "Grounded draft actions, with a human deciding",
+      "transition": { "next_tab": "live", "line": "What happens when an asset alarms on the floor right now?" }
+    },
+    {
+      "id": "live",
+      "persona": { "name": "Darren Koh", "role": "Reliability Engineer (fictional)", "avatar": "" },
+      "talking_points": [
+        "Live readings land in RAW.LIVE_TELEMETRY, from the in-account simulator or from AWS IoT Core through S3 and Snowpipe.",
+        "The Snowflake alert logs ALARM readings with an SOP hint and the asset's current risk band, then emails the on-call engineer."
+      ],
+      "show": ["Messages loaded and lag", "Latest readings", "Alert log"],
+      "call_out": "From sensor alarm to work instruction in one platform",
+      "transition": { "next_tab": "ask-ai", "line": "Now ask the plant data directly." }
+    },
+    {
+      "id": "ask-ai",
+      "persona": { "name": "Nurul Huda Rahim", "role": "VP Manufacturing Operations (fictional)", "avatar": "" },
+      "talking_points": [
+        "The Cortex Agent uses Cortex Analyst over the semantic view for metrics, and Cortex Search over 16 synthetic SOPs.",
+        "Each answer shows the generated SQL and the SOP IDs it cited."
+      ],
+      "show": ["Ask a sample question", "Generated SQL", "SOP citations"],
+      "call_out": "Natural-language answers that can be audited",
+      "transition": { "next_tab": "architecture", "line": "Here is how it is built." }
+    },
+    {
+      "id": "architecture",
+      "persona": { "name": "Nurul Huda Rahim", "role": "VP Manufacturing Operations (fictional)", "avatar": "" },
+      "talking_points": [
+        "Two builds share one core: Snowflake only, or AWS + Snowflake (IoT Core, Bedrock, QuickSight and Amazon Q).",
+        "Everything shown is synthetic, seeded demo data, rebuilt reproducibly from the repo."
+      ],
+      "show": ["Both architecture diagrams"],
+      "call_out": "One governed core, with an optional AWS edge",
+      "transition": { "next_tab": "", "line": "Questions?" }
+    }
+  ]
+}
